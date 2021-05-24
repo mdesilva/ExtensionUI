@@ -1,0 +1,9 @@
+{
+    "presets": [
+        ["@babel/preset-env", {"targets": {
+            "esmodules": true,
+            "chrome": "58"
+            }}],
+        "@babel/preset-typescript"
+    ]
+}
