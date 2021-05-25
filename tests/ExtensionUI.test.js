@@ -1,12 +1,43 @@
 import { expect, test } from "@jest/globals";
 import ExtensionUI from "../src/ExtensionUI";
 
-const MockFunctionComponentZero = ({className, text}) => {
+const MockParagraphComponent = ({className, text}) => {
     return(<p class={className}>{text}</p>)
 }
 
-const MockFunctionComponentOne = ({className, contribution, author}) => {
+const MockBylineComponent = ({className, contribution, author}) => {
     return(<p class={className}>{contribution} - <strong>{author}</strong></p>)
+}
+
+const MockModalComponentOne = ({text}) => {
+    return(
+        <div class="modal">
+            <MockParagraphComponent className="modal-text" text={text}/>
+        </div>
+    )
+}
+
+const MockCheckboxComponent = ({selected}) => {
+    return(
+        <input type="checkbox" value={selected}/>
+    )
+}
+
+const MockControlComponent = ({label, selected}) => {
+    return(
+        <div class="control">
+            <label>{label}</label>
+            <MockCheckboxComponent selected={selected}/>
+        </div>
+    )
+}
+const MockModalComponentTwo = () => {
+    return(
+        <div class="modal">
+            <MockControlComponent label="Muted" selected={false}/>
+            <MockControlComponent label="Camera Enabled" selected={true}/>
+        </div>
+    )
 }
 
 test("createElement returns h1 element with 'theater-heading' class and 'red' style color", () => {
@@ -89,7 +120,7 @@ test("createElement generates paragraph element via direct JSX", () => {
 test("createElement generates paragraph element via a functional component", () => {
     const myClass = "custom-paragraph";
     const myText = "My text"
-    const element = <MockFunctionComponentZero className={myClass} text={myText}/>
+    const element = <MockParagraphComponent className={myClass} text={myText}/>
     expect(element.tagName).toBe("P");
     expect(element.className).toBe(myClass);
     expect(element.textContent).toBe(myText);
@@ -99,7 +130,7 @@ test("createElement generates paragraph element with two children, text and stro
     const myClass = "byline";
     const contribution = "Technical Work";
     const author = "Manuja DeSilva"
-    const element = <MockFunctionComponentOne className={myClass} contribution={contribution} author={author}/>
+    const element = <MockBylineComponent className={myClass} contribution={contribution} author={author}/>
     expect(element.tagName).toBe("P");
     expect(element.className).toBe(myClass);
     expect(element.hasChildNodes()).toBeTruthy();
@@ -108,3 +139,30 @@ test("createElement generates paragraph element with two children, text and stro
     expect(element.lastChild.textContent).toBe(author);
     expect(element.textContent).toBe("Technical Work - Manuja DeSilva")
 })
+
+test("createElement generates a div with a functional component as a child", () => {
+    const myText = "This is a modal";
+    const element = <MockModalComponentOne text={myText}/>
+    expect(element.tagName).toBe("DIV");
+    expect(element.className).toBe("modal");
+    expect(element.hasChildNodes()).toBeTruthy();
+    expect(element.firstChild.className).toBe("modal-text")
+    expect(element.firstChild.textContent).toBe(myText);
+})
+
+test("createElement generates a div with two functional component children, each with their own label and functional component children", () => {
+    const assertControlAttributes = (control, label, selected) => {
+        expect(control.className).toBe("control");
+        expect(control.firstChild.tagName).toBe("LABEL");
+        expect(control.firstChild.textContent).toBe(label);
+        expect(control.lastChild.tagName).toBe("INPUT");
+        expect(control.lastChild.type).toBe("checkbox");
+        expect(control.lastChild.value).toBe(selected);
+    }
+    const element = <MockModalComponentTwo/>
+    expect(element.className).toBe("modal");
+    expect(element.childElementCount).toBe(2);
+    assertControlAttributes(element.firstChild, "Muted", "false");
+    assertControlAttributes(element.lastChild, "Camera Enabled", "true");
+})
+
