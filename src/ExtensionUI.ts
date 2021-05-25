@@ -1,6 +1,4 @@
 export default class ExtensionUI {
-    constructor(){
-    }
 
     public static createElement(type: (props: object) => Element | keyof HTMLElementTagNameMap, props: object, ...children: any[]) {
         if (typeof type === "function") {

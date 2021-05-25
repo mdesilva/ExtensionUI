@@ -4,6 +4,7 @@
   "description": "Framework for building UIs on top of existing DOMs using Chrome Extension content scripts",
   "scripts": {
     "test": "jest",
+    "coverage": "jest --coverage && open coverage/lcov-report/index.html",
     "build": "rm -rf lib/ && ./node_modules/.bin/babel src --out-dir lib --extensions '.ts'"
   },
   "author": "Manuja Desilva",
