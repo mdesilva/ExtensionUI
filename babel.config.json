@@ -5,5 +5,12 @@
             "chrome": "58"
             }}],
         "@babel/preset-typescript"
+    ],
+    "plugins": [
+        ["@babel/plugin-transform-react-jsx", 
+            {
+                "runtime": "classic",
+                "pragma": "ExtensionUI.createElement"
+            }]
     ]
 }
