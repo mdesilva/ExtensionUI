@@ -1,9 +1,11 @@
+type ElementTag = keyof HTMLElementTagNameMap;
+
 export default class ExtensionUI {
 
-    public static createElement(type: (props: object) => Element | keyof HTMLElementTagNameMap, props: object, ...children: any[]) {
+    public static createElement(type: ((props: object) => Element) | ElementTag, props: object, ...children: any[]): Element {
         if (typeof type === "function") {
             return type(props);
-        } 
+        }
         let element: HTMLElement = document.createElement(type);
         if (props) {
             const propKeys = Object.keys(props);
