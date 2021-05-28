@@ -2,20 +2,27 @@ type ElementTag = keyof HTMLElementTagNameMap;
 
 export default class ExtensionUI {
 
-    public static createElement(type: ((props: object) => Element) | ElementTag, props: object, ...children: any[]): Element {
-        if (typeof type === "function") {
-            return type(props);
+    public static createElement(type: ((props: object, children?: Element[]) => Element) | ElementTag, props: object, ...children: Element[] | string[]): Element {
+        let element: Element;
+        if (typeof type == "function") {
+            element = type({...props, children: children});
+            children = [];
+        } else {
+            element = document.createElement(type);
         }
-        let element: HTMLElement = document.createElement(type);
         if (props) {
-            const propKeys = Object.keys(props);
-            for (let i=0; i<propKeys.length; i++) {
-                const key = propKeys[i]
+            Object.keys(props).map(key => {
                 element.setAttribute(key, props[key]);
-            }
+            })
         }
-        children.map((child, idx) => {
-            element.append(child);
+        children.map(child => {
+            if (Array.isArray(child)) {
+                child.map(subchild => {
+                    element.append(subchild);
+                })
+            } else {
+                element.append(child);
+            }
         })
         return element;
     }

@@ -1,21 +1,10 @@
 import { expect, test } from "@jest/globals";
-import ExtensionUI from "../src/ExtensionUI";
+import ExtensionUI from "../../src/ExtensionUI";
+
 
 const MockParagraphComponent = ({className, text}) => {
     return(<p class={className}>{text}</p>)
-}
-
-const MockBylineComponent = ({className, contribution, author}) => {
-    return(<p class={className}>{contribution} - <strong>{author}</strong></p>)
-}
-
-const MockModalComponentOne = ({text}) => {
-    return(
-        <div class="modal">
-            <MockParagraphComponent className="modal-text" text={text}/>
-        </div>
-    )
-}
+}        
 
 const MockCheckboxComponent = ({selected}) => {
     return(
@@ -31,14 +20,15 @@ const MockControlComponent = ({label, selected}) => {
         </div>
     )
 }
-const MockModalComponentTwo = () => {
+
+const MockModalComponentWithChildren = ({children}) => {
     return(
         <div class="modal">
-            <MockControlComponent label="Muted" selected={false}/>
-            <MockControlComponent label="Camera Enabled" selected={true}/>
+            {children}
         </div>
     )
 }
+
 
 describe("createElement", () => {
     test("returns h1 element with 'theater-heading' class and 'red' style color", () => {
@@ -128,6 +118,9 @@ describe("createElement", () => {
     })
     
     test("generates paragraph element with two children, text and strong text child, via a functional component", () => {
+        const MockBylineComponent = ({className, contribution, author}) => {
+            return(<p class={className}>{contribution} - <strong>{author}</strong></p>)
+        }
         const myClass = "byline";
         const contribution = "Technical Work";
         const author = "Manuja DeSilva"
@@ -141,9 +134,16 @@ describe("createElement", () => {
         expect(element.textContent).toBe("Technical Work - Manuja DeSilva")
     })
     
-    test("generates a div with a functional component as a child", () => {
+    test("generates a div with a functional component explicitly declared as a child", () => {
+        const MockModalComponent = ({text}) => {
+            return(
+                <div class="modal">
+                    <MockParagraphComponent className="modal-text" text={text}/>
+                </div>
+            )
+        }
         const myText = "This is a modal";
-        const element = <MockModalComponentOne text={myText}/>
+        const element = <MockModalComponent text={myText}/>
         expect(element.tagName).toBe("DIV");
         expect(element.className).toBe("modal");
         expect(element.hasChildNodes()).toBeTruthy();
@@ -151,7 +151,15 @@ describe("createElement", () => {
         expect(element.firstChild.textContent).toBe(myText);
     })
     
-    test("generates a div with two functional component children, each with their own label and functional component children", () => {
+    test("generates a div with two explicitly declared functional component children, each with their own label and explicitly declared functional component children", () => {
+        const MockModalComponent = () => {
+            return(
+                <div class="modal">
+                    <MockControlComponent label="Muted" selected={false}/>
+                    <MockControlComponent label="Camera Enabled" selected={true}/>
+                </div>
+            )
+        }
         const assertControlAttributes = (control, label, selected) => {
             expect(control.className).toBe("control");
             expect(control.firstChild.tagName).toBe("LABEL");
@@ -160,13 +168,92 @@ describe("createElement", () => {
             expect(control.lastChild.type).toBe("checkbox");
             expect(control.lastChild.value).toBe(selected);
         }
-        const element = <MockModalComponentTwo/>
+        const element = <MockModalComponent/>
         expect(element.className).toBe("modal");
         expect(element.childElementCount).toBe(2);
         assertControlAttributes(element.firstChild, "Muted", "false");
         assertControlAttributes(element.lastChild, "Camera Enabled", "true");
     })
-    
+
+    test("generates an element with an implicitly declared child via a functional component", () => {
+        const element = 
+        <MockModalComponentWithChildren>
+            <input type="text" name="firstName" value="Manuja"/>
+        </MockModalComponentWithChildren>
+        expect(element.tagName).toBe("DIV");
+        expect(element.className).toBe("modal");
+        expect(element.hasChildNodes()).toBeTruthy();
+        const child = element.firstElementChild;
+        expect(child.tagName).toBe("INPUT");
+        expect(child.getAttribute("type")).toBe("text");
+        expect(child.getAttribute("name")).toBe("firstName");
+        expect(child.getAttribute("value")).toBe("Manuja");
+    })
+
+    test("generates an element with implicitly declared children via a functional component", () => {
+        const element: Element = 
+        <MockModalComponentWithChildren>
+            <input type="text" name="email" value="myemail"/>
+            <input type="password" name="password" value="mypassword"/>
+        </MockModalComponentWithChildren>
+        expect(element.tagName).toBe("DIV");
+        expect(element.className).toBe("modal");
+        expect(element.childElementCount).toBe(2);
+        const firstChild = element.firstElementChild;
+        expect(firstChild.getAttribute("type")).toBe("text");
+        expect(firstChild.getAttribute("name")).toBe("email");
+        expect(firstChild.getAttribute("value")).toBe("myemail");
+        const lastChild = element.lastElementChild;
+        expect(lastChild.getAttribute("type")).toBe("password");
+        expect(lastChild.getAttribute("name")).toBe("password");
+        expect(lastChild.getAttribute("value")).toBe("mypassword");
+    })
+
+    test("generates an element with both explicitly and implicitly declared children via a functional component", () =>{
+        const MockModalComponent = ({color, children}) =>{
+            return(
+                <div class="modal">
+                    <div color={color} class="header"></div>
+                    {children}
+                    <div color={color} class="footer"></div>
+                </div>
+            )
+        }
+        const myColorProp = "red";
+        const myText = "You made it!"
+        const element: Element = 
+        <MockModalComponent color={myColorProp}>
+            <p class="custom-text">{myText}</p>
+        </MockModalComponent>
+        expect(element.tagName).toBe("DIV");
+        expect(element.className).toBe("modal");
+        expect(element.childElementCount).toBe(3);
+        const firstChild = element.firstElementChild;
+        expect(firstChild.tagName).toBe("DIV");
+        expect(firstChild.getAttribute("color")).toBe(myColorProp);
+        expect(firstChild.className).toBe("header");
+        const middleChild: Element = element.children[1];
+        expect(middleChild.tagName).toBe("P");
+        expect(middleChild.className).toBe("custom-text");
+        expect(middleChild.textContent).toBe(myText);
+        const lastChild = element.lastElementChild;
+        expect(lastChild.tagName).toBe("DIV");
+        expect(lastChild.getAttribute("color")).toBe(myColorProp)
+        expect(lastChild.className).toBe("footer");
+    })
+
+    test("does not add child element to functional component that doesn't accept children", () => {
+        const myText = "Should not have a child";
+        const element: Element = 
+        <MockParagraphComponent className="myParagraph" text={myText}>
+            <div id="child"> Text that shouldn't be here</div>
+        </MockParagraphComponent>
+        expect(element.textContent).toBe(myText);
+        expect(element.childElementCount).toBe(0);
+        expect(element.firstElementChild).toBeNull();
+        expect(element.childNodes.length).toBe(1);
+        expect(element.childNodes[0].textContent).toBe(myText);
+    })
     
 })
 
