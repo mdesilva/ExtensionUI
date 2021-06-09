@@ -1,4 +1,5 @@
 import { expect, test } from "@jest/globals";
+import { EXTENSIONUI_ATTRIBUTE } from "../../src/Enums";
 import ExtensionUI from "../../src/ExtensionUI";
 
 
@@ -253,6 +254,12 @@ describe("createElement", () => {
         expect(element.firstElementChild).toBeNull();
         expect(element.childNodes.length).toBe(1);
         expect(element.childNodes[0].textContent).toBe(myText);
+    })
+
+    test("creates element with special extensionui attribute", () => {
+        const element: Element = <div></div>;
+        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBeTruthy();
+        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBe(EXTENSIONUI_ATTRIBUTE.VALUE);
     })
     
 })

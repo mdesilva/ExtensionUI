@@ -1,3 +1,5 @@
+import { EXTENSIONUI_ATTRIBUTE } from "./Enums";
+
 type ElementTag = keyof HTMLElementTagNameMap;
 
 export default class ExtensionUI {
@@ -15,6 +17,8 @@ export default class ExtensionUI {
                 element.setAttribute(key, props[key]);
             })
         }
+        //create identifier for all elements created through ExtensionUI
+        element.setAttribute(EXTENSIONUI_ATTRIBUTE.KEY, EXTENSIONUI_ATTRIBUTE.VALUE); 
         children.map(child => {
             /*
             When child element(s) are passed in as props to functional component, 
@@ -33,5 +37,4 @@ export default class ExtensionUI {
         })
         return element;
     }
-
 }

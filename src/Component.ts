@@ -1,3 +1,4 @@
+import { EXTENSIONUI_ATTRIBUTE } from "./Enums";
 import KeyNotDefinedError from "./Exceptions/KeyNotDefinedError";
 
 export default class Component {
@@ -5,6 +6,7 @@ export default class Component {
 
     constructor(state: object = {}) {
         this.state = state;
+        this.render();
     }
 
     protected setState(newState: object): void {
@@ -18,7 +20,26 @@ export default class Component {
         newStateKeys.map((key, idx) => {
             this.state[key] = newState[key]
         })
+        this.removeElementsFromDOM();
+        this.render();
     }
 
+    protected append(element: Element, parentElement?: Element): void {
+        if (parentElement) {
+            parentElement.append(element);
+        } else {
+            document.body.append(element);
+        }
+    }
+
+    /*
+    Remove all ExtensionUI elements from DOM
+    */
+    private removeElementsFromDOM(): void {
+        const elements = document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE.KEY}="${EXTENSIONUI_ATTRIBUTE.VALUE}"]`);
+        elements.forEach(element => element.remove());
+    }
+
+    protected render() {}
 
 }
