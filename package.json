@@ -5,8 +5,10 @@
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage && open coverage/lcov-report/index.html",
-    "build": "rm -rf lib/ && ./node_modules/.bin/babel src --out-dir lib --extensions '.ts'"
+    "build": "rm -rf dist/ && tsc"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Manuja Desilva",
   "license": "ISC",
   "devDependencies": {
@@ -17,6 +19,5 @@
     "@babel/preset-typescript": "^7.13.0",
     "@types/jest": "^26.0.23",
     "jest": "^26.6.3"
-  },
-  "dependencies": {}
+  }
 }

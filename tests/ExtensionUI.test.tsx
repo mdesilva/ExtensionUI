@@ -1,6 +1,6 @@
 import { expect, test } from "@jest/globals";
-import { EXTENSIONUI_ATTRIBUTE } from "../../src/Enums";
-import ExtensionUI from "../../src/ExtensionUI";
+import { EXTENSIONUI_ATTRIBUTE } from "../src/Enums";
+import ExtensionUI from "../src/ExtensionUI";
 
 
 const MockParagraphComponent = ({className, text}) => {

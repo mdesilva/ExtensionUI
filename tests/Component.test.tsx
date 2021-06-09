@@ -1,6 +1,6 @@
-import Component from "../../src/Component"
-import KeyNotDefinedError from "../../src/Exceptions/KeyNotDefinedError";
-import ExtensionUI from "../../src/ExtensionUI";
+import Component from "../src/Component"
+import KeyNotDefinedError from "../src/Exceptions/KeyNotDefinedError";
+import ExtensionUI from "../src/ExtensionUI";
 
 describe("setState", () => {
     test("modifies the state when given a valid key", () => {
