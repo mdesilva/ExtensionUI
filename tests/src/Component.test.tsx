@@ -57,7 +57,7 @@ describe("setState", () => {
 
             render() {
                 const VideoStream = <video id={identifier} muted={this.state.muted}/>;
-                this.append(VideoStream);
+                this.addElement(VideoStream);
             }
 
         }
@@ -78,7 +78,7 @@ beforeEach(() => {
 describe("append", () => {
     test("adds element to body", () => {
         const myComponent = new Component();
-        myComponent['append'](ExtensionUI.createElement("div", {class: "myDiv"}));
+        myComponent['addElement'](ExtensionUI.createElement("div", {class: "myDiv"}));
         expect(document.body.childElementCount).toBe(1);
         expect(document.body.firstElementChild.tagName).toBe("DIV");
         expect(document.body.firstElementChild.className).toBe("myDiv");  
@@ -89,7 +89,7 @@ describe("append", () => {
         document.body.append(parentElement);
         const myComponent = new Component();
         const childElement = ExtensionUI.createElement("p", {class: "myText"}, "This is the child");
-        myComponent['append'](childElement, document.getElementsByClassName("myDiv")[0]);
+        myComponent['addElement'](childElement, document.getElementsByClassName("myDiv")[0]);
         expect(document.body.childElementCount).toBe(1);
         expect(document.body.firstElementChild.tagName).toBe("DIV");
         expect(document.body.firstElementChild.className).toBe("myDiv");
@@ -107,7 +107,7 @@ describe("remove", () => {
         document.body.append(element);
         expect(document.body.childElementCount).toBe(1);
         expect(document.body.firstElementChild.className).toBe("myDiv");
-        myComponent['removeElementsFromDOM']();
+        myComponent['removeElements']();
         expect(document.body.childElementCount).toBe(0);
         expect(document.body.hasChildNodes()).toBeFalsy();
     })
@@ -125,7 +125,7 @@ describe("remove", () => {
         expect(document.body.firstElementChild.childElementCount).toBe(1);
         expect(document.body.firstElementChild.firstElementChild.tagName).toBe("P");
         expect(document.body.firstElementChild.firstElementChild.className).toBe("myText");
-        myComponent['removeElementsFromDOM']();
+        myComponent['removeElements']();
         expect(document.body.childElementCount).toBe(0);
         expect(document.body.hasChildNodes()).toBeFalsy();
     });
@@ -139,7 +139,7 @@ describe("remove", () => {
         <div class="myElem"></div>
         document.body.append(myElement);
         expect(document.body.childElementCount).toBe(2);
-        myComponent['removeElementsFromDOM']();
+        myComponent['removeElements']();
         expect(document.body.childElementCount).toBe(1);
         expect(document.body.firstElementChild.tagName).toBe("DIV");
         expect(document.body.firstElementChild.className).toBe("nativeElement");

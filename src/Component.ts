@@ -20,11 +20,11 @@ export default class Component {
         newStateKeys.map((key, idx) => {
             this.state[key] = newState[key]
         })
-        this.removeElementsFromDOM();
+        this.removeElements();
         this.render();
     }
 
-    protected append(element: Element, parentElement?: Element): void {
+    protected addElement(element: Element, parentElement?: Element): void {
         if (parentElement) {
             parentElement.append(element);
         } else {
@@ -35,7 +35,7 @@ export default class Component {
     /*
     Remove all ExtensionUI elements from DOM
     */
-    private removeElementsFromDOM(): void {
+    private removeElements(): void {
         const elements = document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE.KEY}="${EXTENSIONUI_ATTRIBUTE.VALUE}"]`);
         elements.forEach(element => element.remove());
     }
