@@ -30,8 +30,12 @@ const MockModalComponentWithChildren = ({children}) => {
     )
 }
 
+beforeEach(() => {
+    document.querySelector('html').innerHTML = "";
+});
 
-describe("createElement", () => {
+describe("createElement generates elements", () => {
+
     test("returns h1 element with 'theater-heading' class and 'red' style color", () => {
         const element: Element = 
         ExtensionUI.createElement("h1", {
@@ -156,8 +160,8 @@ describe("createElement", () => {
         const MockModalComponent = () => {
             return(
                 <div class="modal">
-                    <MockControlComponent label="Muted" selected={false}/>
-                    <MockControlComponent label="Camera Enabled" selected={true}/>
+                    <MockControlComponent label="Muted" selected="false"/>
+                    <MockControlComponent label="Camera Enabled" selected="true"/>
                 </div>
             )
         }
@@ -255,12 +259,74 @@ describe("createElement", () => {
         expect(element.childNodes.length).toBe(1);
         expect(element.childNodes[0].textContent).toBe(myText);
     })
-
-    test("creates element with special extensionui attribute", () => {
-        const element: Element = <div></div>;
-        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBeTruthy();
-        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBe(EXTENSIONUI_ATTRIBUTE.VALUE);
-    })
-    
 })
 
+describe("createElement elements have extensionui attribute", () => {
+    test("non-functional element has extensionui attribute", () => {
+        const element: Element = <div></div>;
+        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBe(EXTENSIONUI_ATTRIBUTE.VALUE);
+    })
+
+    test("functional component has extensionui attribute", () => {
+        const Toggle = ({text}) => {
+            return(
+                <div id="customToggle">{text}</div>
+            )
+        }
+        const element: Element = <Toggle text={"This is my toggle."}/>
+        expect(element.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBe(EXTENSIONUI_ATTRIBUTE.VALUE);
+    })
+})
+
+
+describe("createElement correctly assigns event listeners to elements", () => {
+    test("non-functional element has working event listener", () => {
+        const myNativeElement = document.createElement("p");
+        myNativeElement.id = "myNativeElement";
+        myNativeElement.textContent = "This was written once."
+        document.body.append(myNativeElement);
+        const changeText = () => {
+            document.getElementById("myNativeElement").textContent = "This was written twice.";
+        }
+        const element = <div id="myElement" onclick={changeText}/>
+        document.body.append(element);
+        expect(document.getElementById("myElement").getAttribute("onclick")).toBeFalsy();
+        expect(document.getElementById("myNativeElement").textContent).toBe("This was written once.")
+        document.getElementById("myElement").click();
+        expect(document.getElementById("myNativeElement").textContent).toBe("This was written twice.")
+    })
+
+    test("functional component has working event listener", () => {
+        const myNativeElement = document.createElement("p");
+        myNativeElement.id = "myNativeElement";
+        myNativeElement.textContent = "This was written once."
+        document.body.append(myNativeElement);
+        const changeText = () => {
+            document.getElementById("myNativeElement").textContent = "This was written twice.";
+        }
+        const Toggle = ({id, callback}) => {
+            return(
+                <div id={id} onclick={callback}/>
+            )
+        }
+        let element = <Toggle id="myToggle" callback={changeText}/>;
+        document.body.append(element);
+        element = document.getElementById("myToggle");
+        expect(element.getAttribute("callback")).toBeFalsy();
+        expect(element.getAttribute("onclick")).toBeFalsy();
+        expect(element.getAttribute("id")).toBe("myToggle");
+        expect(document.getElementById("myNativeElement").textContent).toBe("This was written once.")
+        document.getElementById("myToggle").click();
+        expect(document.getElementById("myNativeElement").textContent).toBe("This was written twice.")
+    })
+})
+
+describe("createElement correctly assigns properties to elements", () => {
+
+    test("element has srcObject property", () => {
+        let myMediaStream = {src: "mySrc"}
+        let element: HTMLVideoElement = <video id="myVideo" srcObject={myMediaStream}/>
+        expect(element.srcObject).toBeTruthy();
+        expect(element.srcObject).toBe(myMediaStream);
+    })
+})
