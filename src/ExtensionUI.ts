@@ -1,7 +1,7 @@
 import { PROP_TYPE, EXTENSIONUI_ATTRIBUTE, PropsMap } from "./Enums";
 
 type ElementTag = keyof HTMLElementTagNameMap;
-type PropValue = "string" | (() => void) 
+type PropValue = (() => void) | string | boolean;
 
 export default class ExtensionUI {
 
@@ -20,7 +20,7 @@ export default class ExtensionUI {
                     element[prop] =  propValue; //here, the propValue can be 'any'
                     break;
                 case PROP_TYPE.ATTRIBUTE:
-                    typeof propValue === "string" && element.setAttribute(prop, propValue);
+                    (typeof propValue === "string" || typeof propValue === "boolean") && element.setAttribute(prop, String(propValue));
                     break;
             }
 

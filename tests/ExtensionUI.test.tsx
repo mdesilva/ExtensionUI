@@ -160,8 +160,8 @@ describe("createElement generates elements", () => {
         const MockModalComponent = () => {
             return(
                 <div class="modal">
-                    <MockControlComponent label="Muted" selected="false"/>
-                    <MockControlComponent label="Camera Enabled" selected="true"/>
+                    <MockControlComponent label="Muted" selected={false}/>
+                    <MockControlComponent label="Camera Enabled" selected={true}/>
                 </div>
             )
         }
