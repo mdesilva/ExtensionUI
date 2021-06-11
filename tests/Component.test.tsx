@@ -48,11 +48,11 @@ describe("setState", () => {
         const identifier = "myVideoElement";
         class MyComponent extends Component {
             constructor() {
-                super({muted: true});
+                super({muted: "true"});
             }
 
             public setMuteFalse() {
-                this.setState({muted: false});
+                this.setState({muted: "false"});
             }
 
             render() {
