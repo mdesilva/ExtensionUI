@@ -35,9 +35,29 @@ export default class Component {
     /*
     Remove all ExtensionUI elements from DOM
     */
-    public removeElements(): void {
+    protected removeElements(): void {
         const elements = document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE.KEY}="${EXTENSIONUI_ATTRIBUTE.VALUE}"]`);
         elements.forEach(element => element.remove());
+    }
+
+    /*
+    Tag an existing DOM element as an ExtensionUI element.
+    This aids in the rendering process when existing elements need to be re-rendered alongside
+    native ExtensionUI elements.
+    */
+    protected tagExistingElement(element: Element): Element {
+        element.setAttribute(EXTENSIONUI_ATTRIBUTE.KEY, EXTENSIONUI_ATTRIBUTE.VALUE);
+        return element;
+    }
+
+    /*
+    Remove ExtensionUI element tag from an element.
+    This can be used to restore native DOM elements that were tagged (in order
+    to be re-rendered alongside native ExtensionUI elements) to their original spec.
+    */
+    protected removeTagFromElement(element: Element): Element {
+        element.removeAttribute(EXTENSIONUI_ATTRIBUTE.KEY);
+        return element;
     }
 
     protected render() {}
