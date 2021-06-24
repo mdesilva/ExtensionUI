@@ -35,7 +35,7 @@ export default class Component {
     /*
     Remove all ExtensionUI elements from DOM
     */
-    private removeElements(): void {
+    public removeElements(): void {
         const elements = document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE.KEY}="${EXTENSIONUI_ATTRIBUTE.VALUE}"]`);
         elements.forEach(element => element.remove());
     }
