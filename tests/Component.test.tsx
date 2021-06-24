@@ -1,4 +1,5 @@
 import Component from "../src/Component"
+import { EXTENSIONUI_ATTRIBUTE } from "../src/Enums";
 import KeyNotDefinedError from "../src/Exceptions/KeyNotDefinedError";
 import ExtensionUI from "../src/ExtensionUI";
 
@@ -143,5 +144,26 @@ describe("remove", () => {
         expect(document.body.childElementCount).toBe(1);
         expect(document.body.firstElementChild.tagName).toBe("DIV");
         expect(document.body.firstElementChild.className).toBe("nativeElement");
+    })
+})
+
+describe('tagExistingElement', () => {
+    const myComponent = new Component();
+
+    it("tags an existing DOM element with the extensionui attribute", () => {
+        let nativeElement = document.createElement("div");
+        nativeElement = myComponent['tagExistingElement'](nativeElement);
+        expect(nativeElement.getAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBe(EXTENSIONUI_ATTRIBUTE.VALUE);
+    });
+})
+
+describe("removeTagFromElement", () => {
+    const myComponent = new Component();
+
+    it("removes the extensionui attribute from an element that has the extensionui attribute present", () => {
+        let nativeElement = document.createElement("div");
+        nativeElement.setAttribute(EXTENSIONUI_ATTRIBUTE.KEY, EXTENSIONUI_ATTRIBUTE.VALUE);
+        nativeElement = myComponent['removeTagFromElement'](nativeElement);
+        expect(nativeElement.hasAttribute(EXTENSIONUI_ATTRIBUTE.KEY)).toBeFalsy();
     })
 })
