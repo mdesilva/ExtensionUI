@@ -1,65 +1,107 @@
-import { EXTENSIONUI_ATTRIBUTE } from "./Enums";
+import { EXTENSIONUI_ATTRIBUTE_KEY } from "./Enums";
+import CannotUseExtensionUINodeError from "./Exceptions/CannotUseExtensionUINodeError";
+import InvalidExtensionUINode from "./Exceptions/InvalidExtensionUINode";
 import KeyNotDefinedError from "./Exceptions/KeyNotDefinedError";
+import ExtensionUI, { ExtensionUINode } from "./ExtensionUI";
+import { v4 as uuidv4 } from "uuid";
+
+type State = {
+    [key: string]: any
+}
+
+type FamilyMap = {
+    [key: string]: Element
+}
+
+type FunctionMap = {
+    [key: string]: (()=> ExtensionUINode)
+}
+
+type StateMap = {
+    [key: string]: string[]
+}
+
+interface LayoutNode extends ExtensionUINode {
+    id: string
+}
+
+export type StateObjectKey = string;
+
+export interface StateObject {
+    _extensionUIStateMember: boolean,
+    key: StateObjectKey,
+    value: any
+}
 
 export default class Component {
-    protected state: object;
+    private _state: State;
+    protected state: ProxyHandler<object>;
+    private familyMap: FamilyMap = {}; //map of nodes to their parents
+    private functionMap: FunctionMap = {};//map of nodes to their functions
+    private stateMap: StateMap = {}; //map of state to their dependent nodes
 
-    constructor(state: object = {}) {
-        this.state = state;
+    constructor(_state: object = {}) {
+        this._state = _state;
+        this.state = new Proxy(this._state, { get: (target, prop, receiver): StateObject => { return {  _extensionUIStateMember: true, key: prop.toString(), value: target[prop] }}});
         this.render();
     }
 
-    protected setState(newState: object): void {
-        const newStateKeys = Object.keys(newState);
-        for(let i=0; i<newStateKeys.length; i++) {
-            const key = newStateKeys[i];
-            if (!(key in this.state)) {
+    protected setState(newState: State): void {
+        const originalState = this._state;
+        Object.keys(newState).map(key => {
+            if (!(key in this._state)) {
+                this._state = originalState;
                 throw new KeyNotDefinedError(key);
-            }
-        }
-        newStateKeys.map((key, idx) => {
-            this.state[key] = newState[key]
+            } else {
+                this._state[key] = newState[key];
+                this.stateMap[key] &&
+                this.stateMap[key].map(nodeId => {
+                    this.hydrateNode(nodeId);
+                })
+            } 
         })
-        this.removeElements();
-        this.render();
     }
 
-    protected addElement(element: Element, parentElement?: Element): void {
-        if (parentElement) {
-            parentElement.append(element);
-        } else {
-            document.body.append(element);
+    protected addNode(_node: (() => ExtensionUINode), parentElement=document.body): void {
+        if (typeof _node != "function") throw new CannotUseExtensionUINodeError();
+        
+        let node: LayoutNode = Object.assign({id: uuidv4()}, _node());
+
+        if (!node.element && !node.stateProps) throw new InvalidExtensionUINode();
+        if (!(node.element instanceof Element) && !(node.stateProps instanceof Array)) throw new InvalidExtensionUINode();
+
+        node.element.setAttribute(EXTENSIONUI_ATTRIBUTE_KEY, node.id);
+
+        this.familyMap[node.id] = parentElement;
+        this.functionMap[node.id] = _node;
+        node.stateProps.map(stateProp => {
+            stateProp in this.stateMap ? this.stateMap[stateProp].push(node.id) : this.stateMap[stateProp] = [node.id];
+        })
+
+        parentElement.append(node.element);
+    }
+
+    /*
+    Remove all ExtensionUI elements from DOM and clear state, stateMap, familyMap, and functionMap
+    */
+    protected reset(): void {
+        document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE_KEY}]`).forEach(element => element.remove());
+        this._state = {};
+        this.stateMap = {};
+        this.familyMap = {};
+        this.functionMap = {};
+    }
+
+    /*
+    Remove a node from the DOM, re-run its function and append it back to its parent
+    TODO: throw exception for invalid node id
+    */
+    private hydrateNode(nodeId: string){
+        if (this.familyMap[nodeId] && this.functionMap[nodeId]) {
+            document.querySelector(`[${EXTENSIONUI_ATTRIBUTE_KEY}="${nodeId}"]`)?.remove();
+            this.familyMap[nodeId].append(this.functionMap[nodeId]().element);  
         }
-    }
-
-    /*
-    Remove all ExtensionUI elements from DOM
-    */
-    protected removeElements(): void {
-        const elements = document.querySelectorAll(`[${EXTENSIONUI_ATTRIBUTE.KEY}="${EXTENSIONUI_ATTRIBUTE.VALUE}"]`);
-        elements.forEach(element => element.remove());
-    }
-
-    /*
-    Tag an existing DOM element as an ExtensionUI element.
-    This aids in the rendering process when existing elements need to be re-rendered alongside
-    native ExtensionUI elements.
-    */
-    protected tagExistingElement(element: Element): Element {
-        element.setAttribute(EXTENSIONUI_ATTRIBUTE.KEY, EXTENSIONUI_ATTRIBUTE.VALUE);
-        return element;
-    }
-
-    /*
-    Remove ExtensionUI element tag from an element.
-    This can be used to restore native DOM elements that were tagged (in order
-    to be re-rendered alongside native ExtensionUI elements) to their original spec.
-    */
-    protected removeTagFromElement(element: Element): Element {
-        element.removeAttribute(EXTENSIONUI_ATTRIBUTE.KEY);
-        return element;
     }
 
     protected render() {}
-
 }

@@ -1,7 +1,4 @@
-export enum EXTENSIONUI_ATTRIBUTE {
-    KEY="extensionui",
-    VALUE="0"
-}
+export const EXTENSIONUI_ATTRIBUTE_KEY = "extensionui";
 
 export enum PROP_TYPE {
     EVENT="EVENT",
@@ -36,6 +33,8 @@ export const PropsMap =  {
     "onmousemove": PROP_TYPE.EVENT,
     "onmouseout": PROP_TYPE.EVENT,
     "onmouseover": PROP_TYPE.EVENT,
+    "onsubmit": PROP_TYPE.EVENT,
+    "oninput": PROP_TYPE.EVENT,
     "srcObject": PROP_TYPE.PROPERTY
 }
 
