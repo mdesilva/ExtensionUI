@@ -1,40 +1,41 @@
 export const EXTENSIONUI_ATTRIBUTE_KEY = "extensionui";
 
-export enum PROP_TYPE {
+export enum PropType {
     EVENT="EVENT",
     PROPERTY="PROPERTY",
-    ATTRIBUTE="ATTRIBUTE"
+    ATTRIBUTE="ATTRIBUTE",
+    TEXT="TEXT"
 }
 
 /*
 Maps props to their prop types.
 */
 export const PropsMap =  {
-    "onscroll": PROP_TYPE.EVENT,
-    "onselect": PROP_TYPE.EVENT,
-    "onshow": PROP_TYPE.EVENT,
-    "onwheel": PROP_TYPE.EVENT,
-    "oncopy": PROP_TYPE.EVENT,
-    "oncut": PROP_TYPE.EVENT,
-    "onpaste": PROP_TYPE.EVENT,
-    "onblur": PROP_TYPE.EVENT,
-    "onfocus": PROP_TYPE.EVENT,
-    "onfullscreenchange": PROP_TYPE.EVENT,
-    "onfullscreenerror": PROP_TYPE.EVENT,
-    "onkeydown": PROP_TYPE.EVENT,
-    "onkeyup": PROP_TYPE.EVENT,
-    "onauxclick": PROP_TYPE.EVENT,
-    "onclick": PROP_TYPE.EVENT,
-    "oncontextmenu": PROP_TYPE.EVENT,
-    "ondblclick": PROP_TYPE.EVENT,
-    "onmousedown": PROP_TYPE.EVENT,
-    "onmouseenter": PROP_TYPE.EVENT,
-    "onmouseleave": PROP_TYPE.EVENT,
-    "onmousemove": PROP_TYPE.EVENT,
-    "onmouseout": PROP_TYPE.EVENT,
-    "onmouseover": PROP_TYPE.EVENT,
-    "onsubmit": PROP_TYPE.EVENT,
-    "oninput": PROP_TYPE.EVENT,
-    "srcObject": PROP_TYPE.PROPERTY
+    "onscroll": PropType.EVENT,
+    "onselect": PropType.EVENT,
+    "onshow": PropType.EVENT,
+    "onwheel": PropType.EVENT,
+    "oncopy": PropType.EVENT,
+    "oncut": PropType.EVENT,
+    "onpaste": PropType.EVENT,
+    "onblur": PropType.EVENT,
+    "onfocus": PropType.EVENT,
+    "onfullscreenchange": PropType.EVENT,
+    "onfullscreenerror": PropType.EVENT,
+    "onkeydown": PropType.EVENT,
+    "onkeyup": PropType.EVENT,
+    "onauxclick": PropType.EVENT,
+    "onclick": PropType.EVENT,
+    "oncontextmenu": PropType.EVENT,
+    "ondblclick": PropType.EVENT,
+    "onmousedown": PropType.EVENT,
+    "onmouseenter": PropType.EVENT,
+    "onmouseleave": PropType.EVENT,
+    "onmousemove": PropType.EVENT,
+    "onmouseout": PropType.EVENT,
+    "onmouseover": PropType.EVENT,
+    "onsubmit": PropType.EVENT,
+    "oninput": PropType.EVENT,
+    "srcObject": PropType.PROPERTY
 }
 
