@@ -1,46 +1,40 @@
-import { PropType, PropsMap } from "./Enums";
+import Props, { PropsObject } from "./Props";
+import { PropType } from "./Enums";
 import StateObject from "./StateObject";
 import StateProp from "./StateProp";
 import ExtensionUINode from "./ExtensionUINode";
 
 type ElementTag = keyof HTMLElementTagNameMap;
-type PropKey = keyof typeof PropsMap;
-type PropValue = (() => void) | string | boolean | StateObject;
 
-type Prop = {
-    [key: string]: PropValue
+export interface ExtensionUIElement extends Element {
+    [key: string]: any
 }
 
 export default class ExtensionUI {
 
-    public static createElement(type: ((props: object, children?: Element[]) => ExtensionUINode) | ElementTag, props: Prop, ...children: ExtensionUINode[] | string[] | StateObject[]): ExtensionUINode {
+    public static createElement(type: ((props: object, children?: Element[]) => ExtensionUINode) | ElementTag, _props: PropsObject, ..._children: ExtensionUINode[] | string[] | StateObject[]): ExtensionUINode {
         if (typeof type == "function") { 
-            return type({...props, children: children});
+            return type({..._props, children: _children});
         }
-        let stateProps: StateProp[] = [];
-        let childrenNodes: ExtensionUINode[] = [];
-        let element: Element = document.createElement(type);
-        props && Object.keys(props).map(propKey => {
-            let propType: PropType = this.getPropType(propKey);
-            let propValue: PropValue = props[propKey];
-            if (propValue.constructor.name === "StateObject") { 
-                stateProps.push(new StateProp(propType, propKey, propValue.key));
-                propValue = propValue.value;
-            }
-            switch (propType) { 
+        let element: ExtensionUIElement = document.createElement(type);
+        let props: Props = new Props(_props);
+        props.pureProps.map(prop => {
+            const propKey = prop.key;
+            const propValue = prop.value;
+            switch (prop.type) { 
                 case PropType.EVENT:
                     typeof propValue === "function" && element.addEventListener(propKey.slice(2), propValue);
                     break;
                 case PropType.PROPERTY:
-                    element[propKey] =  propValue; //here, the propValue can be 'any'
+                    element[propKey] =  propValue;
                     break;
                 case PropType.ATTRIBUTE:
                     (typeof propValue === "string" || typeof propValue === "boolean") && element.setAttribute(propKey, String(propValue));
                     break;
             }
-
-        })
-        children.map(child => { //plain string | StateObject | ExtensionUINode
+        });
+        let children: ExtensionUINode[] = [];
+        _children.map(child => {
             /*
             When child element(s) are passed in as props to functional component, 
             in the next recursive frame it becomes an array of those child(s),
@@ -49,17 +43,13 @@ export default class ExtensionUI {
             array itself, we need to loop through that inner array to process the child nodes.
             */
            if (Array.isArray(child)) {
-               child.map(subchild => childrenNodes.push(ExtensionUI.transformChild(subchild)));
+               child.map(subchild => children.push(ExtensionUI.transformChild(subchild)));
            } else {
-               childrenNodes.push(ExtensionUI.transformChild(child));
+               children.push(ExtensionUI.transformChild(child));
            }
            
         })
-        return new ExtensionUINode(element, childrenNodes, stateProps);
-    }
-    
-    private static getPropType = (propKey: PropKey | string): PropType => {
-        return propKey in PropsMap ? PropsMap[propKey] : PropType.ATTRIBUTE;
+        return new ExtensionUINode(element, children, props.stateProps);
     }
 
     private static createTextNodeFromPlainText(text: string): ExtensionUINode {

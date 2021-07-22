@@ -1,4 +1,4 @@
-import { StateObjectKey } from "../dist/Component";
+import { StateObjectKey } from "./Component";
 import { PropType } from "./Enums";
 
 export default class StateProp {

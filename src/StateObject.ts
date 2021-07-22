@@ -1,4 +1,4 @@
-import { StateObjectKey } from "../dist/Component";
+import { StateObjectKey } from "./Component";
 
 export default class StateObject {
     public key: StateObjectKey;

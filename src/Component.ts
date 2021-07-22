@@ -1,4 +1,4 @@
-import ExtensionUI from "./ExtensionUI";
+import ExtensionUI, { ExtensionUIElement } from "./ExtensionUI";
 import { EXTENSIONUI_ATTRIBUTE_KEY, PropType } from "./Enums";
 import InvalidExtensionUINode from "./Exceptions/InvalidExtensionUINode";
 import KeyNotDefinedError from "./Exceptions/KeyNotDefinedError";
@@ -28,7 +28,7 @@ export default class Component {
     private stateMap: StateMap = {}; //map of state to their dependent nodes
     constructor(_state: object = {}) {
         this._state = _state;
-        this.state = new Proxy(this._state, { get: (target, prop, receiver): StateObject => { return new StateObject(prop.toString(), target[prop]) }});
+        this.state = new Proxy(this._state, { get: (target, prop, receiver): StateObject => { return new StateObject(prop.toString(), target[String(prop)]) }});
         this.render();
     }
 
@@ -80,9 +80,9 @@ export default class Component {
     TODO: throw exception for invalid node id
     */
     private hydrateNode(nodeId: string){
-        const element = document.querySelector(`[${EXTENSIONUI_ATTRIBUTE_KEY}="${nodeId}"]`);
+        const element: ExtensionUIElement | null = document.querySelector(`[${EXTENSIONUI_ATTRIBUTE_KEY}="${nodeId}"]`);
         const stateProps = this.statePropMap[nodeId];
-        stateProps.map(stateProp => {
+        element && stateProps.map(stateProp => {
             const propType = stateProp.type;
             const propKey = stateProp.key;
             const propValue = this._state[stateProp.stateKey];
@@ -91,7 +91,7 @@ export default class Component {
                     element[propKey] = propValue;
                     break;
                 case PropType.ATTRIBUTE:
-                    element?.setAttribute(propKey, propValue);
+                    element.setAttribute(propKey, propValue);
                     break;
                 case PropType.TEXT:
                     element.innerHTML = propValue;
