@@ -8,7 +8,7 @@ export enum PropType {
 }
 
 /*
-Maps props to their prop types.
+Maps prop keys to their prop types.
 */
 export const PropsMap =  {
     "onscroll": PropType.EVENT,

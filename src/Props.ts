@@ -4,7 +4,7 @@ import StateProp from "./StateProp";
 export interface PropsObject {
     [key: string]: any
 }
-type PropKey = keyof typeof PropsMap;
+type PropKey = keyof typeof PropsMap | string;
 
 export default class Props {
     public stateProps: StateProp[] = [];
@@ -29,16 +29,16 @@ export default class Props {
 
 export class Prop {
     public type: PropType;
-    public key: PropKey | string;
+    public key: PropKey;
     public value: any;
 
-    constructor(type: PropType, key: PropKey | string, value: any){
+    constructor(type: PropType, key: PropKey, value: any){
         this.type = type;
         this.key = key;
         this.value = value;
     }
 
-    public static getPropType(propKey: PropKey | string): PropType {
+    public static getPropType(propKey: PropKey): PropType {
         return propKey in PropsMap ? PropsMap[propKey] : PropType.ATTRIBUTE;
     }
 }

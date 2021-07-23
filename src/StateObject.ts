@@ -8,4 +8,5 @@ export default class StateObject {
         this.key = key;
         this.value = value;
     }
+
 }

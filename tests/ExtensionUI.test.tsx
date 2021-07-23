@@ -374,25 +374,3 @@ describe("createElement correctly assigns properties to elements", () => {
         expect(node.element.srcObject).toBe(myMediaStream);
     })
 })
-
-describe("createTextNode returns ExtensionUINode containing span element", () => {
-    test("when given plain text", () => {
-        let node = ExtensionUI['createTextNodeFromPlainText']("This is some text");
-        expect(node.element.tagName).toBe("SPAN");
-        expect(node.element.textContent).toBe("This is some text");
-        expect(node.children.length).toBe(0);
-        expect(node.stateProps.length).toBe(0);
-    })
-
-    test("when given a state object", () => {
-        let node = ExtensionUI['createTextNodeFromStateObject'](new StateObject("firstName", "Manuja"));
-        expect(node.element.tagName).toBe("SPAN");
-        expect(node.element.textContent).toBe("Manuja");
-        expect(node.children.length).toBe(0);
-        expect(node.stateProps.length).toBe(1);
-        let stateProp = node.stateProps[0];
-        expect(stateProp.type).toBe(PropType.TEXT);
-        expect(stateProp.key).toBe("");
-        expect(stateProp.stateKey).toBe("firstName");
-    })
-})
