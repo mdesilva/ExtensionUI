@@ -6,7 +6,7 @@ import Children from "./Children";
 
 type ElementTag = keyof HTMLElementTagNameMap;
 
-export interface ExtensionUIElement extends Element {
+export interface ExtensionUIElement extends HTMLElement {
     [key: string]: any
 }
 

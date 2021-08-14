@@ -98,6 +98,7 @@ export default class Component {
                     break;
             }
         })
+        element && element.focus()
     }
 
     protected render() {}

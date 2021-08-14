@@ -123,6 +123,21 @@ describe("hydrateNode", () => {
         layout['hydrateNode'](childNodeId);
         expect(document.getElementById("myNode").textContent).toBe("Tomorrow you are on planet Mars.");
     })
+
+    test("should put focus on node after updating", () => {
+        const layout: Component = new Component({value: "Manuja"});
+        const nativeNode = document.createElement("input");
+        nativeNode.id = "nativeNode";
+        nativeNode.type = "text";
+        document.body.append(nativeNode)
+        const myNode: ExtensionUINode = <input id="myNode" type="text" value={layout['state']['value']}></input>
+        const myNodeId = mockAddNode(myNode, layout);
+        document.getElementById("nativeNode").focus()
+        expect(document.activeElement).toBe(document.getElementById("nativeNode"));
+        layout['_state']['value'] = "Jyoti";
+        layout['hydrateNode'](myNodeId);
+        expect(document.activeElement).toBe(document.getElementById("myNode"));
+    })
 })
 
 describe("addNode", () => {
